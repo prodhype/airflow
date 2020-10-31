@@ -814,10 +814,7 @@ class PubSubPublishMessageOperator(BaseOperator):
         super().__init__(**kwargs)
         self.project_id = project_id
         self.topic = topic
-        try:
-            self.messages = json.loads(messages)  # allow use of templated lists of messages
-        except (TypeError, json.decoder.JSONDecodeError):
-            self.messages = messages
+        self.messages = messages
         self.gcp_conn_id = gcp_conn_id
         self.delegate_to = delegate_to
         self.impersonation_chain = impersonation_chain
@@ -828,9 +825,13 @@ class PubSubPublishMessageOperator(BaseOperator):
             delegate_to=self.delegate_to,
             impersonation_chain=self.impersonation_chain,
         )
+        try:
+            _messages = json.loads(self.messages)  # allow use of templated lists of messages
+        except (TypeError, json.decoder.JSONDecodeError):
+            _messages = self.messages
 
         self.log.info("Publishing to topic %s", self.topic)
-        hook.publish(project_id=self.project_id, topic=self.topic, messages=self.messages)
+        hook.publish(project_id=self.project_id, topic=self.topic, messages=_messages)
         self.log.info("Published to topic %s", self.topic)
 
 
