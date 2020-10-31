@@ -18,6 +18,7 @@
 """This module contains Google PubSub operators."""
 import warnings
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+import json
 
 from google.api_core.retry import Retry
 from google.cloud.pubsub_v1.types import (
@@ -813,6 +814,10 @@ class PubSubPublishMessageOperator(BaseOperator):
         super().__init__(**kwargs)
         self.project_id = project_id
         self.topic = topic
+        try:
+            self.messages = json.loads(messages)  # allow use of templated lists of messages
+        except json.decoder.JSONDecodeError:
+            self.messages = messages
         self.messages = messages
         self.gcp_conn_id = gcp_conn_id
         self.delegate_to = delegate_to
