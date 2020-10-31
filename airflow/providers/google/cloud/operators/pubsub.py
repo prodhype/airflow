@@ -818,7 +818,6 @@ class PubSubPublishMessageOperator(BaseOperator):
             self.messages = json.loads(messages)  # allow use of templated lists of messages
         except json.decoder.JSONDecodeError:
             self.messages = messages
-        self.messages = messages
         self.gcp_conn_id = gcp_conn_id
         self.delegate_to = delegate_to
         self.impersonation_chain = impersonation_chain
