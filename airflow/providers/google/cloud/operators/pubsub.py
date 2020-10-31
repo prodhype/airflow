@@ -816,7 +816,7 @@ class PubSubPublishMessageOperator(BaseOperator):
         self.topic = topic
         try:
             self.messages = json.loads(messages)  # allow use of templated lists of messages
-        except json.decoder.JSONDecodeError:
+        except (TypeError, json.decoder.JSONDecodeError):
             self.messages = messages
         self.gcp_conn_id = gcp_conn_id
         self.delegate_to = delegate_to
